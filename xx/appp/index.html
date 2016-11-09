@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no">
+		<title>H5幸运大转盘抽奖</title>
+		<link href="css/activity-style.css" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" type="text/css" href="js/frozen.css"/>
+	</head>
+
+	<body class="activity-lottery-winning">
+		<div class="main" style="height: 100%;st">
+			<div id="outercont" style="height: 100%;">
+				<div class="zhezhaoAll">
+				</div>
+				<div class="gitgift">
+					<p class="showthis">恭喜你中了<span class="jidengj"></span>等奖</p>
+					<p class="showgift"></p>
+					<img class="back" src="images/back.png" />
+					<img class="shar" src="images/fenxiang.png" />
+				</div>
+				<div id="outer-cont">
+					<div id="outer">
+						<img style="width:310" src="images/zhuanpan.png" />
+					</div>
+				</div>
+				<div id="inner-cont">
+					<div id="inner" style="position: relative;">
+						<img src="images/zhizhen.png">
+						<input type="number" class="tel" maxlength="13" value="" placeholder="填写电话号码！" />
+						<img class="dianji" src="images/kaishichoujiang_03.jpg" />
+						<p style="text-align: center;color: red;" class="jingao"></p>
+					</div>
+				</div>
+				<div class="tishi">
+					<p class="tiship"></p>
+				</div>
+			</div>
+			<div class="content">
+				<div class="">
+					<!--<p style="text-align: center;font-size: 16px;color: #6908a3;">你今天还有<span>&nbsp;&nbsp;1&nbsp;&nbsp;</span>次抽奖机会</p>-->
+					<p class="showguizhe" style="text-align: center;"><span style="border-bottom: 1px solid #efe9e9;color: #efe9e9;font-size: 14px;">活动规则</span></p>
+				</div>
+			</div>
+			<div class="zhezhao">
+
+			</div>
+			<div class="guizhe">
+				<p>1.活动时间：11月8日-11月15日(每个手机号限领一次奖品)</p>
+				<p>2.参与方式：活动期间内关注“轻语洁牙仪“官方微信</p>
+				<p>3.每个手机号每天可参加一次抽奖，分享后可增加一次抽奖机会</p>
+				<p>4.优惠券用于下次消费时抵扣，不可叠加使用</p>
+				<p>5.流量统一充值时间微11月15日-11月20日之间（仅限11月有效）</p>
+			</div>
+		</div>
+	</body>
+</html>
+<!--<script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js" type="text/javascript" charset="utf-8"></script>-->
+<script src="js/jweixin-1.1.0.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/jquery-1.7.2.min.js" type="text/javascript"></script>
+<script src="js/zepto.js"></script>
+<script src="js/frozen.min.js"></script>
+<script src="js/jQueryRotate.2.2.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+    var id,openid,shuju,signature,appid,nonceStr,timestamp;
+    openid = location.href.split('?openid=')[1].split('&')[0];
+    id = location.href.split('&merchantId=')[1];
+	var dataObj = [0,144, 36, 72,  108, 180, 216, 252, 288, 324];
+	$(function() {
+		var rotating = false;
+		var rotateFunc = function(num) {
+			rotating = true;
+			$("#outer").rotate({
+				angle: 0, //旋转一个角度
+				duration: 4000, // 旋转持续时间，以毫秒为单位
+				animateTo: num + 3600, //1440是我要让指针旋转4圈
+				callback: function() { //旋转完成后的回调函数
+					rotating = false;
+					$('.gitgift').css('display', 'block')
+				}
+			});
+		};
+		$(".dianji").click(function() {
+			if($('.tel').val() == '' || $('.tel').val().length !=11|| $('.tel').val()[0] !=1 ){//判断电话号码是否填写
+				$('.jingao').css('display','block')
+				$('.jingao').html('请填写电话号码')	
+			}else{
+				$('.jingao').css('display','none')
+				$('.zhezhaoAll').css('display', 'block')
+					/***
+					 * ajax操作返回数据*
+					 * **/
+					var result;
+					$.ajax({//抽奖
+						async:  true,
+						timeout: 1000,
+						type:'POST',
+						url: 'http://ld.ludanmall.com/'+'authorization/getLottery',
+						data: {
+							id:id,
+							openid:openid
+						},
+						processData: true,
+						datatype: 'get',
+						success: function(data) {
+							$('.zhezhaoAll').css('display', 'none')
+							if(!data.hasOwnProperty('response')){
+								if(data.responseData.data.hasOwnProperty('giftName')){//如果中奖了
+									$('.showgift').html(data.responseData.data.giftName)
+									$('.jidengj').html(data.responseData.data.id)
+									rotateFunc(dataObj[data.responseData.data.id - 1]);
+									
+								}else{
+									alert('抽奖机会已用完')
+								}
+								$.ajax({//修改用户资料
+									async:  true,
+									timeout: 1000,
+									type:'POST',
+									url: 'http://ld.ludanmall.com/'+'authorization/updateUser',
+									data: {
+										id:id,
+										openid:openid,
+										phone:$('.tel').val(),
+										name:''
+									},
+									processData: true,
+									datatype: 'get',
+									success: function(data) {
+//										console.log(data.response)
+									},
+									error: function() {
+//										console.log(XMLHttpRequest + textStatus + errorThrown)
+									}
+								});
+								return result;
+							}else{
+								if(data.hasOwnProperty('response')){
+									alert(data.response.sub_msg)
+								}else{
+									alert(data.response.sub_msg)
+								}
+								
+//								$.tips({content: data.response.sub_msg,stayTime:10000});
+							}
+						},
+						error: function(XMLHttpRequest, textStatus, errorThrown) {
+							$('.zhezhaoAll').css('display', 'none')
+//							console.log(XMLHttpRequest + textStatus + errorThrown)
+						}
+					});
+					return result;
+			}
+		});
+	});
+	$('.back').click(function() { 
+		$('.zhezhaoAll').css('display', 'none')
+		$('.gitgift').css('display', 'none')
+	})
+	$('.zhezhao').click(function() {
+		$('.zhezhao').css('display', 'none')
+		$('.guizhe').css('display', 'none')
+	})
+	$('.guizhe').click(function() { //隐藏规则
+		$('.zhezhao').css('display', 'none')
+		$('.guizhe').css('display', 'none')
+	})
+	$('.showguizhe').click(function() {//隐藏规则
+		$('.zhezhao').css('display', 'block')
+		$('.guizhe').css('display', 'block')
+	})
+//	$('.shar').click(function(){
+//		$('.shar').css('display','block')
+//	})
+	//获取微信的jsdk
+	window.onload=start()
+	function start (){
+		var earr
+		$.ajax({//授权
+			async:  true,
+			timeout: 1000,
+			type:'POST',
+			url: 'http://ld.ludanmall.com/'+'authorization/getSign',
+			data: {
+				id:id,
+				url:location.href
+			},
+			processData: true,
+			datatype: 'get',
+			success: function(data) {
+				signature = data.responseData.data.split('{signature=')[1].split(', ')[0]
+				appid = data.responseData.data.split('appid=')[1].split(', ')[0]
+				nonceStr = data.responseData.data.split('nonceStr=')[1].split(', ')[0]
+				timestamp = data.responseData.data.split('timestamp=')[1].split('}')[0]
+				shar()
+			},
+			error: function() {
+//				console.log(XMLHttpRequest + textStatus + errorThrown)
+			}
+		});
+		return earr;
+	}
+	function shar(){
+			wx.config({
+		        debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+		        appId: appid, // 必填，公众号的唯一标识
+		        timestamp: timestamp, // 必填，生成签名的时间戳
+		        nonceStr: nonceStr, // 必填，生成签名的随机串
+		        signature: signature, // 必填，签名，见附录1
+		        jsApiList: ['onMenuShareAppMessage','onMenuShareTimeline'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+		    });
+	    	wx.ready(function() { //实例化 获取userinfo
+	       		 wx.onMenuShareAppMessage({
+		            title: '抽大奖啦！', // 分享标题
+		            desc: '百抽百中', // 分享描述
+		            link: location.protocol+'//'+location.host+'/appp/qrcode.html', // 分享链接
+		            imgUrl: '', // 分享图标
+		            type: 'link', // 分享类型,music、video或link，不填默认为link
+		            dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+		            success: function() {
+		                // 用户确认分享后执行的回调函数
+	                alert('分享成功!')
+	//              self.tipsFn('分享成功!');
+					$.ajax({//资料
+							async:  true,
+							timeout: 1000,
+							type:'POST',
+							url: 'http://ld.ludanmall.com/'+'authorization/updateUser',
+							data: {
+								id:id,
+								openid:openid,
+								status:'status',
+							},
+							processData: true,
+							datatype: 'get',
+							success: function(data) {
+								
+							},
+							error: function() {
+	//							console.log(XMLHttpRequest + textStatus + errorThrown)
+							}
+						});
+		            },
+	            cancel: function() {
+	                // 用户取消分享后执行的回调函数
+	            }
+	        });
+		
+	        wx.onMenuShareTimeline({
+	            title: '抽大奖啦', // 分享标题
+	            link: location.protocol+'//'+location.host+'/appp/qrcode.html', // 分享链接
+	            imgUrl: '', // 分享图标
+	            success: function() {
+	                // 用户确认分享后执行的回调函数
+	                alert('分享成功!')
+						   $.ajax({//授权
+						async:  true,
+						timeout: 1000,
+						type:'POST',
+						url: 'http://ld.ludanmall.com/'+'authorization/updateUser',
+						data: {
+							id:id,
+							openid:openid,
+							status:'status',
+						},
+						processData: true,
+						datatype: 'get',
+						success: function(data) {
+							
+						},
+						error: function() {
+//							console.log(XMLHttpRequest + textStatus + errorThrown)
+						}
+					});
+	            },
+	            cancel: function() {
+	                // 用户取消分享后执行的回调函数
+	            }
+	        });
+		    wx.error(function(res) {
+		    	alert(JSON.stringify(res))
+	//	        self.tipsFn(JSON.stringify(res));
+		    });
+	    })
+	}
+	
+	
+</script>
