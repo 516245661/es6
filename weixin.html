@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>weixinches</title>
+	</head>
+	<body>
+		<div>
+			
+		</div>
+	</body>
+</html>
+<script src="xx/appp/js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript">
+	function click() {
+		var result = "";
+		var self = this;
+		$.ajax({
+			async: true ,
+			timeout: 150000,
+			type:'get',
+			url: 'http://116.62.40.97:8088/v1/wechat/jsapi/pay/',
+			data: {
+				data:'123'
+			},
+			processData: true,
+			datatype: 'json',
+			success: function(data) {
+				console.log(data)
+			},
+		});
+		return result;
+	}
+	click();
+</script>
