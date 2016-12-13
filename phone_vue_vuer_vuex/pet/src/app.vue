@@ -3,17 +3,13 @@
     <div class="com-app-box">
         <com-header :commData = "commConf" ></com-header>
         <div class="com-app">
-
-
              <transition :name="transitionName" >
-
                       <router-view class="child-view"></router-view>
              </transition>
         </div>
         <com-footer v-show="commConf.isFooter"></com-footer>
         <com-calendar :style = "calendar"></com-calendar>
         <com-loading v-if="loading"></com-loading>
-
         <div v-show  = "mark" class="mark" @touchmove.stop.prevent ="" @touchstart.stop.prevent =""  @touchend.stop.prevent =""></div>
     </div>
 </template>

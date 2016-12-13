@@ -2,8 +2,6 @@
  * Created by linhaifeng on 2016/11/7.
  */
 
-
-
 var Mock = require('mockjs');
 var Random = Mock.Random;
 Random.cname();

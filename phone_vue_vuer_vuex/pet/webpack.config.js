@@ -3,14 +3,14 @@ var path = require('path')
 var webpack = require('webpack')
 
 module.exports = {
-    entry: './src/main.js',
-    output: {
+    entry: './src/main.js', //入口文件
+    output: { //出口文件
         path: path.resolve(__dirname, './dist'),
         publicPath: '/dist/',
         filename: 'build.js'
     },
-    module: {
-        rules: [
+    module: { //组件 ， 模块
+        rules: [ //规则
             {
                 test: /\.vue$/,
                 loader: 'vue',
@@ -47,9 +47,9 @@ module.exports = {
         ]
     },
     
-    resolve: {
-        extensions: ['.js', '.vue','.scss'],
-        alias: {
+    resolve: { //解析
+        extensions: ['.js', '.vue','.scss'], //解析范围
+        alias: { //解析的文件
             'vue$': 'vue/dist/vue.js',
             'vuex$': 'vuex/dist/vuex.js',
             'vueRouter$': 'vue-router/dist/vue-router.js',
